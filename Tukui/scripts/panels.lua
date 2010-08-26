@@ -204,3 +204,11 @@ if TukuiCF["datatext"].battleground == true then
 	cubeleft:RegisterEvent("PLAYER_ENTERING_WORLD")
 	cubeleft:SetScript("OnEvent", CubeLeftClick)
 end
+
+-- LEFT CHAT PANEL
+local leftchat = CreateFrame("Frame", "LeftChatFramePanel", UIParent)
+TukuiDB.CreatePanel(leftchat, TukuiDB.Scale(370), TukuiDB.Scale(110), "BOTTOMLEFT", ileft, "TOPLEFT", TukuiDB.Scale(0), TukuiDB.Scale(5))
+
+-- RIGHT CHAT PANEL
+local rightchat = CreateFrame("Frame", "RightChatFramePanel", UIParent)
+TukuiDB.CreatePanel(rightchat, TukuiDB.Scale(370), TukuiDB.Scale(100), "BOTTOMRIGHT", iright, "TOPRIGHT", TukuiDB.Scale(0), TukuiDB.Scale(5))
