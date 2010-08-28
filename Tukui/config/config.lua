@@ -119,8 +119,8 @@ TukuiCF["datatext"] = {
 	["armor"] = 0,                         -- show your armor value against the level mob you are currently targeting
 
 	["battleground"] = true,               -- enable 3 stats in battleground only that replace stat1,stat2,stat3.
-	["time24"] = true,                     -- set time to 24h format.
-	["localtime"] = false,                 -- set time to local time instead of server time.
+	["time24"] = false,                     -- set time to 24h format.
+	["localtime"] = true,                 -- set time to local time instead of server time.
 	["fontsize"] = 12,                     -- font size for panels.
 }
 
