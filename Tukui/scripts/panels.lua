@@ -211,4 +211,4 @@ TukuiDB.CreatePanel(leftchat, TukuiDB.Scale(370), TukuiDB.Scale(110), "BOTTOMLEF
 
 -- RIGHT CHAT PANEL
 local rightchat = CreateFrame("Frame", "RightChatFramePanel", UIParent)
-TukuiDB.CreatePanel(rightchat, TukuiDB.Scale(370), TukuiDB.Scale(100), "BOTTOMRIGHT", iright, "TOPRIGHT", TukuiDB.Scale(0), TukuiDB.Scale(5))
+TukuiDB.CreatePanel(rightchat, TukuiDB.Scale(370), TukuiDB.Scale(110), "BOTTOMRIGHT", iright, "TOPRIGHT", TukuiDB.Scale(0), TukuiDB.Scale(5))
