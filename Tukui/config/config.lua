@@ -35,7 +35,7 @@ TukuiCF["unitframes"] = {
 
 	-- raid layout
 	["showrange"] = true,                  -- show range opacity on raidframes
-	["healcomm"] = false,                  -- enable healcomm4 support on healer layout.
+	["healcomm"] = true,                  -- enable healcomm4 support on healer layout.
 	["raidalphaoor"] = 0.3,                -- alpha of unitframes when unit is out of range
 	["gridonly"] = true,                  -- enable grid only mode for all healer mode raid layout.
 	["showsymbols"] = true,	               -- show symbol.
