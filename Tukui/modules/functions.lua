@@ -281,7 +281,8 @@ TukuiDB.PostUpdateHealthRaid = function(health, unit, min, max)
 		-- because if vehicle or pet is too far away, unitreaction return nil and color of health bar is white.
 		if not UnitIsPlayer(unit) and UnitIsFriend(unit, "player") and TukuiCF["unitframes"].unicolor ~= true then
 			r, g, b = 75/255,  175/255, 76/255
-			health:SetStatusBarColor(r, g, b)				
+			health:SetStatusBarColor(r, g, b)
+			health.bg:SetTexture(.1, .1, .1)
 		end
 		
 		if min ~= max then
@@ -509,20 +510,22 @@ TukuiDB.HidePortrait = function(self, unit)
 	end
 end
 
-TukuiDB.PostCastStart = function (self, event, unit)
-	if self.interrupt then
-		self:SetStatusBarColor(1, 0, 0, 0.5)
+local CheckInterrupt = function(self, unit)
+	if unit == "vehicle" then unit = "player" end
+
+	if self.interrupt and UnitCanAttack("player", unit) then
+		self:SetStatusBarColor(1, 0, 0, 0.5)	
 	else
-		self:SetStatusBarColor(0.31, 0.45, 0.63, 0.5)
+		self:SetStatusBarColor(0.31, 0.45, 0.63, 0.5)		
 	end
 end
 
-TukuiDB.SpellCastInterruptable = function(self, event, unit)
-	if event == 'UNIT_SPELLCAST_NOT_INTERRUPTABLE' then
-		self:SetStatusBarColor(1, 0, 0, 0.5)
-	else
-		self:SetStatusBarColor(0,31, 0.45, 0.63, 0.5)
-	end
+TukuiDB.CheckCast = function(self, unit, name, rank, castid)
+	CheckInterrupt(self, unit)
+end
+
+TukuiDB.CheckChannel = function(self, unit, name, rank)
+	CheckInterrupt(self, unit)
 end
 
 TukuiDB.MLAnchorUpdate = function (self)
@@ -549,7 +552,6 @@ TukuiDB.UpdatePetInfo = function(self,event)
 end
 
 local delay = 0
-local viperAspectName = GetSpellInfo(34074)
 TukuiDB.UpdateManaLevel = function(self, elapsed)
 	delay = delay + elapsed
 	if self.parent.unit ~= "player" or delay < 0.2 or UnitIsDeadOrGhost("player") or UnitPowerType("player") ~= 0 then return end
@@ -557,26 +559,12 @@ TukuiDB.UpdateManaLevel = function(self, elapsed)
 
 	local percMana = UnitMana("player") / UnitManaMax("player") * 100
 
-	if AotV then
-		local viper = UnitBuff("player", viperAspectName)
-		if percMana >= TukuiCF["unitframes"].highThreshold and viper then
-			self.ManaLevel:SetText("|cffaf5050"..tukuilocal.unitframes_ouf_gohawk.."|r")
-			Flash(self, 0.3)
-		elseif percMana <= TukuiCF["unitframes"].lowThreshold and not viper then
-			self.ManaLevel:SetText("|cffaf5050"..tukuilocal.unitframes_ouf_goviper.."|r")
-			Flash(self, 0.3)
-		else
-			self.ManaLevel:SetText()
-			StopFlash(self)
-		end
+	if percMana <= TukuiCF.unitframes.lowThreshold then
+		self.ManaLevel:SetText("|cffaf5050"..tukuilocal.unitframes_ouf_lowmana.."|r")
+		Flash(self, 0.3)
 	else
-		if percMana <= 20 then
-			self.ManaLevel:SetText("|cffaf5050"..tukuilocal.unitframes_ouf_lowmana.."|r")
-			Flash(self, 0.3)
-		else
-			self.ManaLevel:SetText()
-			StopFlash(self)
-		end
+		self.ManaLevel:SetText()
+		StopFlash(self)
 	end
 end
 
@@ -655,10 +643,15 @@ TukuiDB.countOffsets = {
 }
 
 function TukuiDB.CreateAuraWatchIcon(self, icon)
+	TukuiDB.SetTemplate(icon)
+	icon.icon:SetPoint("TOPLEFT", TukuiDB.Scale(1), TukuiDB.Scale(-1))
+	icon.icon:SetPoint("BOTTOMRIGHT", TukuiDB.Scale(-1), TukuiDB.Scale(1))
 	icon.icon:SetTexCoord(.08, .92, .08, .92)
+	icon.icon:SetDrawLayer("ARTWORK")
 	if (icon.cd) then
 		icon.cd:SetReverse()
-	end 	
+	end
+	icon.overlay:SetTexture()
 end
 
 function TukuiDB.createAuraWatch(self, unit)
@@ -675,7 +668,6 @@ function TukuiDB.createAuraWatch(self, unit)
 	end
 
 	local buffs = {}
-	local debuffs = TukuiDB.debuffids
 
 	if (TukuiDB.buffids["ALL"]) then
 		for key, value in pairs(TukuiDB.buffids["ALL"]) do
@@ -695,8 +687,8 @@ function TukuiDB.createAuraWatch(self, unit)
 			local icon = CreateFrame("Frame", nil, auras)
 			icon.spellID = spell[1]
 			icon.anyUnit = spell[4]
-			icon:SetWidth(TukuiDB.Scale(7*TukuiCF["unitframes"].gridscale))
-			icon:SetHeight(TukuiDB.Scale(7*TukuiCF["unitframes"].gridscale))
+			icon:SetWidth(TukuiDB.Scale(6*TukuiCF["unitframes"].gridscale))
+			icon:SetHeight(TukuiDB.Scale(6*TukuiCF["unitframes"].gridscale))
 			icon:SetPoint(spell[2], 0, 0)
 
 			local tex = icon:CreateTexture(nil, "OVERLAY")
@@ -716,25 +708,6 @@ function TukuiDB.createAuraWatch(self, unit)
 			auras.icons[spell[1]] = icon
 		end
 	end
-
-	-- Raid debuffs (Big icon in the middle)
-	if (debuffs) then
-		for key, spellID in pairs(debuffs) do
-			local icon = CreateFrame("Frame", nil, auras)
-			icon.spellID = spellID
-			icon.anyUnit = true
-			icon:SetWidth(TukuiDB.Scale(22*TukuiCF["unitframes"].gridscale))
-			icon:SetHeight(TukuiDB.Scale(22*TukuiCF["unitframes"].gridscale))
-			icon:SetPoint("CENTER", 0, 0)
-						
-			local count = icon:CreateFontString(nil, "OVERLAY")
-			count:SetFont(TukuiCF["media"].uffont, 9*TukuiCF["unitframes"].gridscale, "THINOUTLINE")
-			count:SetPoint("BOTTOMRIGHT", 2, 2)
-			icon.count = count
-
-			auras.icons[spellID] = icon
-		end
-	end
-
+	
 	self.AuraWatch = auras
 end

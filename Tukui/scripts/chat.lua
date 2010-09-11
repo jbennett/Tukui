@@ -34,6 +34,7 @@ local replaceschan = {
 	['Party'] = '[P]',
 	['Party Leader'] = '[PL]',
 	['Dungeon Guide'] = '[DG]',
+	['Guide du donjon'] = '[GdD]',
 	['Raid'] = '[R]',
 	['Raid Leader'] = '[RL]',
 	['Raid Warning'] = '[RW]',
@@ -83,9 +84,6 @@ local function SetChatStyle(frame)
 			
 	-- Stop the chat chat from fading out
 	_G[chat]:SetFading(false)
-	
-	-- set strata to low
-	_G[chat]:SetFrameStrata("LOW")
 	
 	-- move the chat edit box
 	_G[chat.."EditBox"]:ClearAllPoints();
@@ -149,18 +147,17 @@ local function SetChatStyle(frame)
 	if _G[chat] == _G["ChatFrame2"] then
 		FCF_SetWindowName(_G[chat], "Log")
 	end
-	
+
 	-- create our own texture for edit box
-	TukuiChatchatEditBox = _G[chat.."EditBox"]
-	local edit = CreateFrame("frame", "TukuiChatchatEditBoxBackground", TukuiChatchatEditBox)
-	TukuiDB.CreatePanel(edit, 1, 1, "LEFT", "TukuiChatchatEditBox", "LEFT", 0, 0)
-	edit:ClearAllPoints()
-	edit:SetAllPoints(TukuiInfoLeft)
-	edit:SetFrameStrata("HIGH")
-	edit:SetFrameLevel(2)
+	local EditBoxBackground = CreateFrame("frame", "TukuiChatchatEditBoxBackground", _G[chat.."EditBox"])
+	TukuiDB.CreatePanel(EditBoxBackground, 1, 1, "LEFT", _G[chat.."EditBox"], "LEFT", 0, 0)
+	EditBoxBackground:ClearAllPoints()
+	EditBoxBackground:SetAllPoints(TukuiInfoLeft)
+	EditBoxBackground:SetFrameStrata("LOW")
+	EditBoxBackground:SetFrameLevel(1)
 	
 	local function colorize(r,g,b)
-		edit:SetBackdropBorderColor(r, g, b)
+		EditBoxBackground:SetBackdropBorderColor(r, g, b)
 	end
 	
 	-- update border color according where we talk
@@ -194,12 +191,6 @@ local function SetupChat(self, event, addon)
 		local frame = _G[format("ChatFrame%s", i)]
 		SetChatStyle(frame)
 	end
-
-	-- disable minimize system because we don't use this shit at all on classic chat.
-	FCF_MinimizeFrame = TukuiDB.dummy
-
-	-- New UpdateColors function, stop it!
-	FCFTab_UpdateColors = TukuiDB.dummy
 	
 	-- Remember last channel
 	ChatTypeInfo.WHISPER.sticky = 1
@@ -339,6 +330,16 @@ local function AddMessageHook(frame, text, ...)
 	text = replace(text, "|Hplayer:(.+):(.+)|h%[(.+)%]|h whispers:", "From [|Hplayer:%1:%2|h%3|h]:")
 	text = replace(text, "|Hplayer:(.+):(.+)|h%[(.+)%]|h says:", "[|Hplayer:%1:%2|h%3|h]:")	
 	text = replace(text, "|Hplayer:(.+):(.+)|h%[(.+)%]|h yells:", "[|Hplayer:%1:%2|h%3|h]:")
+	if find(text, replace(ERR_AUCTION_SOLD_S,'%%s', '')) then	-- "A buyer has been found for your auction of %s."
+		local itemname = text:match(replace(ERR_AUCTION_SOLD_S, '%%s', '(.+)'))
+		text = "|cffef4341"..BUTTON_LAG_AUCTIONHOUSE.."|r - |cffBCD8FF"..ITEM_SOLD_COLON.."|r "
+		local _, solditem = GetItemInfo(itemname)
+		if solditem then
+			text = text..solditem
+		else
+			text = text..itemname
+		end
+	end 
 	return AddMessageOriginal(frame, text, ...)
 end
 
