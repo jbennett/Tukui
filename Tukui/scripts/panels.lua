@@ -17,7 +17,7 @@ if TukuiDB.lowversion == true then
 		barbg:SetHeight(TukuiDB.buttonsize + (TukuiDB.buttonspacing * 2))
 	end
 else
-	barbg:SetWidth((TukuiDB.buttonsize * 24) + (TukuiDB.buttonspacing * 25))
+	barbg:SetWidth((TukuiDB.buttonsize * 22) + (TukuiDB.buttonspacing * 23))
 	if TukuiCF["actionbar"].bottomrows == 2 then
 		barbg:SetHeight((TukuiDB.buttonsize * 2) + (TukuiDB.buttonspacing * 3))
 	else
@@ -27,6 +27,11 @@ end
 barbg:SetFrameStrata("BACKGROUND")
 barbg:SetFrameLevel(1)
 
+-- INVISIBLE FRAME COVERING TukuiActionBarBackground
+local invbarbg = CreateFrame("Frame", "InvTukuiActionBarBackground", UIParent)
+invbarbg:SetSize(barbg:GetWidth(), barbg:GetHeight())
+invbarbg:SetPoint("BOTTOM", 0, TukuiDB.Scale(14))
+
 -- LEFT VERTICAL LINE
 local ileftlv = CreateFrame("Frame", "TukuiInfoLeftLineVertical", barbg)
 TukuiDB.CreatePanel(ileftlv, 2, 130, "BOTTOMLEFT", UIParent, "BOTTOMLEFT", TukuiDB.Scale(22), TukuiDB.Scale(30))
@@ -35,13 +40,35 @@ TukuiDB.CreatePanel(ileftlv, 2, 130, "BOTTOMLEFT", UIParent, "BOTTOMLEFT", Tukui
 local irightlv = CreateFrame("Frame", "TukuiInfoRightLineVertical", barbg)
 TukuiDB.CreatePanel(irightlv, 2, 130, "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", TukuiDB.Scale(-22), TukuiDB.Scale(30))
 
--- CUBE AT LEFT, WILL ACT AS A BUTTON
+-- CUBE AT LEFT, ACT AS A BUTTON (CHAT MENU)
 local cubeleft = CreateFrame("Frame", "TukuiCubeLeft", barbg)
 TukuiDB.CreatePanel(cubeleft, 10, 10, "BOTTOM", ileftlv, "TOP", 0, 0)
+cubeleft:EnableMouse(true)
+cubeleft:SetScript("OnMouseDown", function(self, btn)
+	if TukuiInfoLeftBattleGround then
+		if btn == "RightButton" then
+			if TukuiInfoLeftBattleGround:IsShown() then
+				TukuiInfoLeftBattleGround:Hide()
+			else
+				TukuiInfoLeftBattleGround:Show()
+			end
+		end
+	end
+	
+	if btn == "LeftButton" then	
+		ToggleFrame(ChatMenu)
+	end
+end)
 
--- CUBE AT RIGHT, WILL ACT AS A BUTTON
+-- CUBE AT RIGHT, ACT AS A BUTTON (CONFIGUI or BG'S)
 local cuberight = CreateFrame("Frame", "TukuiCubeRight", barbg)
 TukuiDB.CreatePanel(cuberight, 10, 10, "BOTTOM", irightlv, "TOP", 0, 0)
+if TukuiCF["bags"].enable then
+	cuberight:EnableMouse(true)
+	cuberight:SetScript("OnMouseDown", function(self)
+		ToggleKeyRing()
+	end)
+end
 
 -- HORIZONTAL LINE LEFT
 local ltoabl = CreateFrame("Frame", "TukuiLineToABLeft", barbg)
@@ -78,8 +105,8 @@ if TukuiMinimap then
 end
 
 --RIGHT BAR BACKGROUND
-if TukuiCF["actionbar"].enable == true or not (IsAddOnLoaded("Dominos") or IsAddOnLoaded("Bartender4") or IsAddOnLoaded("Macaroon")) then
-	local barbgr = CreateFrame("Frame", "TukuiActionBarBackgroundRight", MultiBarRight)
+if TukuiCF["actionbar"].enable == true then
+	local barbgr = CreateFrame("Frame", "TukuiActionBarBackgroundRight", UIParent)
 	TukuiDB.CreatePanel(barbgr, 1, (TukuiDB.buttonsize * 12) + (TukuiDB.buttonspacing * 13), "RIGHT", UIParent, "RIGHT", TukuiDB.Scale(-23), TukuiDB.Scale(-13.5))
 	if TukuiCF["actionbar"].rightbars == 1 then
 		barbgr:SetWidth(TukuiDB.buttonsize + (TukuiDB.buttonspacing * 2))
@@ -100,7 +127,7 @@ if TukuiCF["actionbar"].enable == true or not (IsAddOnLoaded("Dominos") or IsAdd
 		TukuiDB.CreatePanel(crbld, 10, 10, "TOP", rbl, "BOTTOM", 0, 0)
 	end
 
-	local petbg = CreateFrame("Frame", "TukuiPetActionBarBackground", PetActionButton1)
+	local petbg = CreateFrame("Frame", "TukuiPetActionBarBackground", UIParent)
 	if TukuiCF["actionbar"].rightbars > 0 then
 		TukuiDB.CreatePanel(petbg, TukuiDB.petbuttonsize + (TukuiDB.petbuttonspacing * 2), (TukuiDB.petbuttonsize * 10) + (TukuiDB.petbuttonspacing * 11), "RIGHT", barbgr, "LEFT", TukuiDB.Scale(-6), 0)
 	else
@@ -121,94 +148,13 @@ if TukuiCF["datatext"].battleground == true then
 	bgframe:SetFrameStrata("LOW")
 	bgframe:SetFrameLevel(0)
 	bgframe:EnableMouse(true)
-	local function OnEvent(self, event)
-		if event == "PLAYER_ENTERING_WORLD" then
-			inInstance, instanceType = IsInInstance()
-			if inInstance and (instanceType == "pvp") then
-				bgframe:Show()
-			else
-				bgframe:Hide()
-			end
-		end
-	end
-	bgframe:SetScript("OnEnter", function(self)
-	local numScores = GetNumBattlefieldScores()
-		for i=1, numScores do
-			name, killingBlows, honorKills, deaths, honorGained, faction, rank, race, class, classToken, damageDone, healingDone  = GetBattlefieldScore(i);
-			if ( name ) then
-				if ( name == UnitName("player") ) then
-					GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 0, TukuiDB.Scale(4));
-					GameTooltip:ClearLines()
-					GameTooltip:SetPoint("BOTTOM", self, "TOP", 0, TukuiDB.Scale(1))
-					GameTooltip:ClearLines()
-					GameTooltip:AddLine(tukuilocal.datatext_ttstatsfor.."[|cffCC0033"..name.."|r]")
-					GameTooltip:AddLine' '
-					GameTooltip:AddDoubleLine(tukuilocal.datatext_ttkillingblows, killingBlows,1,1,1)
-					GameTooltip:AddDoubleLine(tukuilocal.datatext_tthonorkills, honorKills,1,1,1)
-					GameTooltip:AddDoubleLine(tukuilocal.datatext_ttdeaths, deaths,1,1,1)
-					GameTooltip:AddDoubleLine(tukuilocal.datatext_tthonorgain, honorGained,1,1,1)
-					GameTooltip:AddDoubleLine(tukuilocal.datatext_ttdmgdone, damageDone,1,1,1)
-					GameTooltip:AddDoubleLine(tukuilocal.datatext_tthealdone, healingDone,1,1,1)
-					--Add extra statistics to watch based on what BG you are in.
-					if GetRealZoneText() == "Arathi Basin" then --
-						GameTooltip:AddDoubleLine(tukuilocal.datatext_basesassaulted,GetBattlefieldStatData(i, 1),1,1,1)
-						GameTooltip:AddDoubleLine(tukuilocal.datatext_basesdefended,GetBattlefieldStatData(i, 2),1,1,1)
-					elseif GetRealZoneText() == "Warsong Gulch" then --
-						GameTooltip:AddDoubleLine(tukuilocal.datatext_flagscaptured,GetBattlefieldStatData(i, 1),1,1,1)
-						GameTooltip:AddDoubleLine(tukuilocal.datatext_flagsreturned,GetBattlefieldStatData(i, 2),1,1,1)
-					elseif GetRealZoneText() == "Eye of the Storm" then --
-						GameTooltip:AddDoubleLine(tukuilocal.datatext_flagscaptured,GetBattlefieldStatData(i, 1),1,1,1)
-					elseif GetRealZoneText() == "Alterac Valley" then
-						GameTooltip:AddDoubleLine(tukuilocal.datatext_graveyardsassaulted,GetBattlefieldStatData(i, 1),1,1,1)
-						GameTooltip:AddDoubleLine(tukuilocal.datatext_graveyardsdefended,GetBattlefieldStatData(i, 2),1,1,1)
-						GameTooltip:AddDoubleLine(tukuilocal.datatext_towersassaulted,GetBattlefieldStatData(i, 3),1,1,1)
-						GameTooltip:AddDoubleLine(tukuilocal.datatext_towersdefended,GetBattlefieldStatData(i, 4),1,1,1)
-					elseif GetRealZoneText() == "Strand of the Ancients" then
-						GameTooltip:AddDoubleLine(tukuilocal.datatext_demolishersdestroyed,GetBattlefieldStatData(i, 1),1,1,1)
-						GameTooltip:AddDoubleLine(tukuilocal.datatext_gatesdestroyed,GetBattlefieldStatData(i, 2),1,1,1)
-					elseif GetRealZoneText() == "Isle of Conquest" then
-						GameTooltip:AddDoubleLine(tukuilocal.datatext_basesassaulted,GetBattlefieldStatData(i, 1),1,1,1)
-						GameTooltip:AddDoubleLine(tukuilocal.datatext_basesdefended,GetBattlefieldStatData(i, 2),1,1,1)
-					end					
-					GameTooltip:Show()
-				end
-			end
-		end
-	end) 
-	bgframe:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
-	bgframe:RegisterEvent("PLAYER_ENTERING_WORLD")
-	bgframe:SetScript("OnEvent", OnEvent)
-	
-	-- this part is to enable left cube as a button for battleground stat panel.
-	local function CubeLeftClick(self, event)
-		if event == "ZONE_CHANGED_NEW_AREA" or event == "PLAYER_ENTERING_WORLD" then
-			cubeleft:SetBackdropBorderColor(unpack(TukuiCF["media"].bordercolor))
-			inInstance, instanceType = IsInInstance()
-			if TukuiCF["datatext"].battleground == true and (inInstance and (instanceType == "pvp")) then
-				cubeleft:EnableMouse(true)
-			else
-				cubeleft:EnableMouse(false)
-			end
-		end   
-	end
-	cubeleft:SetScript("OnMouseDown", function()
-		if bgframe:IsShown() then
-			bgframe:Hide()
-			cubeleft:SetBackdropBorderColor(0.78,0.03,0.08)
-		else
-			cubeleft:SetBackdropBorderColor(unpack(TukuiCF["media"].bordercolor))
-			bgframe:Show()
-		end
-	end)
-	cubeleft:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-	cubeleft:RegisterEvent("PLAYER_ENTERING_WORLD")
-	cubeleft:SetScript("OnEvent", CubeLeftClick)
 end
 
--- LEFT CHAT PANEL
+--[[
 local leftchat = CreateFrame("Frame", "LeftChatFramePanel", UIParent)
 TukuiDB.CreatePanel(leftchat, TukuiDB.Scale(370), TukuiDB.Scale(110), "BOTTOMLEFT", ileft, "TOPLEFT", TukuiDB.Scale(0), TukuiDB.Scale(5))
 
 -- RIGHT CHAT PANEL
 local rightchat = CreateFrame("Frame", "RightChatFramePanel", UIParent)
 TukuiDB.CreatePanel(rightchat, TukuiDB.Scale(370), TukuiDB.Scale(110), "BOTTOMRIGHT", iright, "TOPRIGHT", TukuiDB.Scale(0), TukuiDB.Scale(5))
+]]--

@@ -1,7 +1,7 @@
 ﻿TukuiCF["general"] = {
 	["autoscale"] = true,                  -- mainly enabled for users that don't want to mess with the config file
 	["uiscale"] = 0.71,                    -- set your value (between 0.64 and 1) of your uiscale if autoscale is off
-	["overridelowtohigh"] = true,         -- EXPERIMENTAL ONLY! override lower version to higher version on a lower reso.
+	["overridelowtohigh"] = false,         -- EXPERIMENTAL ONLY! override lower version to higher version on a lower reso.
 	["multisampleprotect"] = true,         -- i don't recommend this because of shitty border but, voila!
 }
 
@@ -11,7 +11,7 @@ TukuiCF["unitframes"] = {
 	["enemyhcolor"] = false,               -- enemy target (players) color by hostility, very useful for healer.
 	["unitcastbar"] = true,                -- enable tukui castbar
 	["cblatency"] = false,                 -- enable castbar latency
-	["cbicons"] = false,                    -- enable icons on castbar
+	["cbicons"] = true,                    -- enable icons on castbar
 	["auratimer"] = true,                  -- enable timers on buffs/debuffs
 	["auratextscale"] = 11,                -- the font size of buffs/debuffs timers on unitframes
 	["playerauras"] = false,               -- enable auras
@@ -23,26 +23,26 @@ TukuiCF["unitframes"] = {
 	["focusdebuffs"] = false,              -- enable focus debuffs 
 	["showfocustarget"] = false,           -- show focus target
 	["showtotalhpmp"] = false,             -- change the display of info text on player and target with XXXX/Total.
-	["showsmooth"] = false,                 -- enable smooth bar
+	["showsmooth"] = true,                 -- enable smooth bar
 	["showthreat"] = true,                 -- enable the threat bar anchored to info left panel.
 	["charportrait"] = false,              -- do i really need to explain this?
-	["maintank"] = false,                  -- enable maintank
-	["mainassist"] = false,                -- enable mainassist
+	-- NOT DONE YET ["maintank"] = false,  -- enable maintank
+	-- NOT DONE YET ["mainassist"] = false,-- enable mainassist
 	["unicolor"] = false,                  -- enable unicolor theme
-	["combatfeedback"] = false,             -- enable combattext on player and target.
+	["combatfeedback"] = true,             -- enable combattext on player and target.
 	["playeraggro"] = true,                -- color player border to red if you have aggro on current target.
-	["positionbychar"] = false,             -- save X, Y position with /uf (movable frame) per character instead of per account.
+	["positionbychar"] = true,             -- save X, Y position with /uf (movable frame) per character instead of per account.
+	["healcomm"] = false,                  -- enable healprediction support.
 
 	-- raid layout
 	["showrange"] = true,                  -- show range opacity on raidframes
-	["healcomm"] = true,                  -- enable healcomm4 support on healer layout.
 	["raidalphaoor"] = 0.3,                -- alpha of unitframes when unit is out of range
-	["gridonly"] = true,                  -- enable grid only mode for all healer mode raid layout.
+	["gridonly"] = false,                  -- enable grid only mode for all healer mode raid layout.
 	["showsymbols"] = true,	               -- show symbol.
 	["aggro"] = true,                      -- show aggro on all raids layouts
-	["raidunitdebuffwatch"] = true,       -- track important spell to watch in pve for grid mode.
-	["gridhealthvertical"] = false,         -- enable vertical grow on health bar for grid mode.
-	["showplayerinparty"] = true,         -- show my player frame in party
+	["raidunitdebuffwatch"] = true,        -- track important spell to watch in pve for grid mode.
+	["gridhealthvertical"] = true,         -- enable vertical grow on health bar for grid mode.
+	["showplayerinparty"] = false,         -- show my player frame in party
 	["gridscale"] = 1,                     -- set the healing grid scaling
 	
 	-- boss frames
@@ -68,11 +68,9 @@ TukuiCF["arena"] = {
 TukuiCF["actionbar"] = {
 	["enable"] = true,                     -- enable tukz action bars
 	["hotkey"] = true,                     -- enable hotkey display because it was a lot requested
-	["rightbarmouseover"] = false,         -- enable right bars on mouse over
-	["shapeshiftmouseover"] = true,       -- enable shapeshift or totembar on mouseover
 	["hideshapeshift"] = false,            -- hide shapeshift or totembar because it was a lot requested.
-	["bottomrows"] = 1,                    -- numbers of row you want to show at the bottom (select between 1 and 2 only)
-	["rightbars"] = 2,                     -- numbers of right bar you want
+	["bottomrows"] = 2,                    -- numbers of row you want to show at the bottom (select between 1 and 2 only)
+	["rightbars"] = 3,                     -- numbers of right bar you want
 	["showgrid"] = true,                   -- show grid on empty button
 }
 
@@ -81,8 +79,7 @@ TukuiCF["nameplate"] = {
 }
 
 TukuiCF["bags"] = {
-	["enable"] = false,                     -- enable an all in one bag mod that fit tukui perfectly
-	["soulbag"] = true,                    -- show warlock soulbag slot on bag.
+	["enable"] = true,                     -- enable an all in one bag mod that fit tukui perfectly
 }
 
 TukuiCF["map"] = {
@@ -112,15 +109,15 @@ TukuiCF["datatext"] = {
 	["dps_text"] = 0,                      -- show a dps meter on panels
 	["hps_text"] = 0,                      -- show a heal meter on panels
 	["power"] = 7,                         -- show your attackpower/spellpower/healpower/rangedattackpower whatever stat is higher gets displayed
-	["arp"] = 0,                           -- show your armor penetration rating on panels.
 	["haste"] = 0,                         -- show your haste rating on panels.
 	["crit"] = 0,                          -- show your crit rating on panels.
 	["avd"] = 0,                           -- show your current avoidance against the level of the mob your targeting
 	["armor"] = 0,                         -- show your armor value against the level mob you are currently targeting
+	["currency"] = 0,                      -- show your tracked currency on panels
 
 	["battleground"] = true,               -- enable 3 stats in battleground only that replace stat1,stat2,stat3.
-	["time24"] = false,                     -- set time to 24h format.
-	["localtime"] = true,                 -- set time to local time instead of server time.
+	["time24"] = true,                     -- set time to 24h format.
+	["localtime"] = false,                 -- set time to local time instead of server time.
 	["fontsize"] = 12,                     -- font size for panels.
 }
 
@@ -143,7 +140,7 @@ TukuiCF["merchant"] = {
 }
 
 TukuiCF["error"] = {
-	["enable"] = false,                     -- true to enable this mod, false to disable
+	["enable"] = true,                     -- true to enable this mod, false to disable
 	filter = {                             -- what messages to not hide
 		["Inventory is full."] = true,     -- inventory is full will not be hidden by default
 	},
@@ -153,13 +150,9 @@ TukuiCF["invite"] = {
 	["autoaccept"] = true,                 -- auto-accept invite from guildmate and friends.
 }
 
-TukuiCF["watchframe"] = { 
-	["movable"] = true,                    -- disable this if you run "Who Framed Watcher Wabbit" from seerah.
-}
-
 TukuiCF["buffreminder"] = {
 	["enable"] = true,                     -- this is now the new innerfire warning script for all armor/aspect class.
-	["sound"] = false,                      -- enable warning sound notification for reminder.
+	["sound"] = true,                      -- enable warning sound notification for reminder.
 }
 
 TukuiCF["others"] = {
