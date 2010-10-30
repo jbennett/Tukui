@@ -29,7 +29,7 @@ for i= 1, 12 do
 end
 
 -- remove 4 buttons on high reso to fit bottom bar.
-if not TukuiDB.lowversion and TukuiCF.actionbar.bottomrows == 2 then
+if not TukuiDB.lowversion and TukuiCF.actionbar.bottomrows == 2 and false then
 	MultiBarLeftButton11:SetScale(0.0001) 
 	MultiBarLeftButton11:SetAlpha(0)
 	MultiBarLeftButton12:SetScale(0.0001)
