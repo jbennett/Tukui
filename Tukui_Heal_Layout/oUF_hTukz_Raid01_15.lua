@@ -6,7 +6,7 @@ local normTex = TukuiCF["media"].normTex
 
 local function Shared(self, unit)
 	self.colors = TukuiDB.oUF_colors
-	self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+	self:RegisterForClicks("AnyUp")
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
 	
@@ -79,6 +79,7 @@ local function Shared(self, unit)
     name:SetPoint("LEFT", health, 3, 0)
 	name:SetFont(font2, 12*TukuiDB.raidscale, "THINOUTLINE")
 	name:SetShadowOffset(1, -1)
+	--name.frequentUpdates = 0.2
 	self:Tag(name, "[Tukui:namemedium]")
 	self.Name = name
 	
@@ -118,11 +119,11 @@ local function Shared(self, unit)
 		self.RaidIcon = RaidIcon
 	end
 	
-	--local ReadyCheck = self.Power:CreateTexture(nil, "OVERLAY")
-	--ReadyCheck:SetHeight(TukuiDB.Scale(12*TukuiDB.raidscale))
-	--ReadyCheck:SetWidth(TukuiDB.Scale(12*TukuiDB.raidscale))
-	--ReadyCheck:SetPoint('CENTER')
-	--self.ReadyCheck = ReadyCheck
+	local ReadyCheck = self.Power:CreateTexture(nil, "OVERLAY")
+	ReadyCheck:SetHeight(TukuiDB.Scale(12*TukuiDB.raidscale))
+	ReadyCheck:SetWidth(TukuiDB.Scale(12*TukuiDB.raidscale))
+	ReadyCheck:SetPoint('CENTER')
+	self.ReadyCheck = ReadyCheck
 	
     local debuffs = CreateFrame('Frame', nil, self)
     debuffs:SetPoint('LEFT', self, 'RIGHT', 4, 0)
@@ -178,7 +179,7 @@ local function Shared(self, unit)
 			maxOverflow = 1,
 		}
 	end
-	
+
 	return self
 end
 

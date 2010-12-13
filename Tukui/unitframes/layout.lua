@@ -25,7 +25,7 @@ local function Shared(self, unit)
 	self.colors = TukuiDB.oUF_colors
 	
 	-- register click
-	self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+	self:RegisterForClicks("AnyUp")
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
 	
@@ -38,6 +38,24 @@ local function Shared(self, unit)
 
 	-- this is the glow border
 	TukuiDB.CreateShadow(self)
+	
+	------------------------------------------------------------------------
+	--	Features we want for all units at the same time
+	------------------------------------------------------------------------
+	
+	-- here we create an invisible frame for all element we want to show over health/power.
+	local InvFrame = CreateFrame("Frame", nil, self)
+	InvFrame:SetFrameStrata("HIGH")
+	InvFrame:SetFrameLevel(5)
+	InvFrame:SetAllPoints()
+	
+	-- symbols, now put the symbol on the frame we created above.
+	local RaidIcon = InvFrame:CreateTexture(nil, "OVERLAY")
+	RaidIcon:SetTexture("Interface\\AddOns\\Tukui\\media\\textures\\raidicons.blp") -- thx hankthetank for texture
+	RaidIcon:SetHeight(20)
+	RaidIcon:SetWidth(20)
+	RaidIcon:SetPoint("TOP", 0, 8)
+	self.RaidIcon = RaidIcon
 	
 	------------------------------------------------------------------------
 	--	Player and Target units layout (mostly mirror'd)
@@ -192,14 +210,14 @@ local function Shared(self, unit)
 			self:Tag(status, "[pvp]")
 			
 			-- leader icon
-			local Leader = health:CreateTexture(nil, "OVERLAY")
+			local Leader = InvFrame:CreateTexture(nil, "OVERLAY")
 			Leader:SetHeight(TukuiDB.Scale(14))
 			Leader:SetWidth(TukuiDB.Scale(14))
 			Leader:SetPoint("TOPLEFT", TukuiDB.Scale(2), TukuiDB.Scale(8))
 			self.Leader = Leader
 			
 			-- master looter
-			local MasterLooter = health:CreateTexture(nil, "OVERLAY")
+			local MasterLooter = InvFrame:CreateTexture(nil, "OVERLAY")
 			MasterLooter:SetHeight(TukuiDB.Scale(14))
 			MasterLooter:SetWidth(TukuiDB.Scale(14))
 			self.MasterLooter = MasterLooter
@@ -500,7 +518,7 @@ local function Shared(self, unit)
 			local CPoints = {}
 			CPoints.unit = PlayerFrame.unit
 			for i = 1, 5 do
-				CPoints[i] = health:CreateTexture(nil, "OVERLAY")
+				CPoints[i] = self:CreateTexture(nil, "OVERLAY")
 				CPoints[i]:SetHeight(TukuiDB.Scale(12))
 				CPoints[i]:SetWidth(TukuiDB.Scale(12))
 				CPoints[i]:SetTexture(bubbleTex)
@@ -872,9 +890,9 @@ local function Shared(self, unit)
 		self.Name = Name
 		
 		if (db.unitcastbar == true) then
-			-- castbar of player and target
 			local castbar = CreateFrame("StatusBar", self:GetName().."_Castbar", self)
 			castbar:SetStatusBarTexture(normTex)
+			self.Castbar = castbar
 			
 			if not TukuiDB.lowversion then
 				castbar.bg = castbar:CreateTexture(nil, "BORDER")
@@ -899,7 +917,6 @@ local function Shared(self, unit)
 				castbar.Text:SetPoint("LEFT", panel, "LEFT", TukuiDB.Scale(4), 0)
 				castbar.Text:SetTextColor(0.84, 0.75, 0.65)
 				
-				self.Castbar = castbar
 				self.Castbar.Time = castbar.time
 			end
 		end
@@ -1270,25 +1287,6 @@ local function Shared(self, unit)
 		self:Tag(Name, '[Tukui:getnamecolor][Tukui:nameshort]')
 		self.Name = Name
 	end
-
-	------------------------------------------------------------------------
-	--	Features we want for all units at the same time
-	------------------------------------------------------------------------
-	
-	-- here we create an invisible frame for all element we want to show over health/power.
-	-- because we can only use self here, and self is under all elements.
-	local InvFrame = CreateFrame("Frame", nil, self)
-	InvFrame:SetFrameStrata("HIGH")
-	InvFrame:SetFrameLevel(5)
-	InvFrame:SetAllPoints()
-	
-	-- symbols, now put the symbol on the frame we created above.
-	local RaidIcon = InvFrame:CreateTexture(nil, "OVERLAY")
-	RaidIcon:SetTexture("Interface\\AddOns\\Tukui\\media\\textures\\raidicons.blp") -- thx hankthetank for texture
-	RaidIcon:SetHeight(20)
-	RaidIcon:SetWidth(20)
-	RaidIcon:SetPoint("TOP", 0, 8)
-	self.RaidIcon = RaidIcon
 	
 	return self
 end
@@ -1389,24 +1387,41 @@ if db.showboss then
 	end
 end
 
--- THIS NEED TO BE UPDATED FOR 4.0.1 BUT I'M RUNNING OUT OF TIME FOR A v12 RELEASE.
---[[
-if db.maintank == true then
-	local tank = oUF:SpawnHeader("oUF_MainTank", nil, 'raid, party, solo', 
-		"showRaid", true, "groupFilter", "MAINTANK", "yOffset", 5, "point" , "BOTTOM",
-		"template", "oUF_tukzMtt"
+local assisttank_width  = 100
+local assisttank_height  = 20
+if TukuiCF["unitframes"].maintank == true then
+	local tank = oUF:SpawnHeader('oUF_MainTank', nil, 'raid',
+		'oUF-initialConfigFunction', ([[
+			self:SetWidth(%d)
+			self:SetHeight(%d)
+		]]):format(assisttank_width, assisttank_height),
+		'showRaid', true,
+		'groupFilter', 'MAINTANK',
+		'yOffset', 7,
+		'point' , 'BOTTOM',
+		'template', 'oUF_tukzMtt'
 	)
 	tank:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 end
-
-if db.mainassist == true then
-	local assist = oUF:SpawnHeader("oUF_MainAssist", nil, 'raid, party, solo', 
-		"showRaid", true, "groupFilter", "MAINASSIST", "yOffset", 5, "point" , "BOTTOM",
-		"template", "oUF_tukzMtt"
+ 
+if TukuiCF["unitframes"].mainassist == true then
+	local assist = oUF:SpawnHeader("oUF_MainAssist", nil, 'raid',
+		'oUF-initialConfigFunction', ([[
+			self:SetWidth(%d)
+			self:SetHeight(%d)
+		]]):format(assisttank_width, assisttank_height),
+		'showRaid', true,
+		'groupFilter', 'MAINASSIST',
+		'yOffset', 7,
+		'point' , 'BOTTOM',
+		'template', 'oUF_tukzMtt'
 	)
-	assist:SetPoint("CENTER", UIParent, "CENTER", 0, -100)
+	if TukuiCF["unitframes"].maintank == true then
+		assist:SetPoint("TOPLEFT", oUF_MainTank, "BOTTOMLEFT", 2, -50)
+	else
+		assist:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+	end
 end
---]]
 
 -- this is just a fake party to hide Blizzard frame if no Tukui raid layout are loaded.
 local party = oUF:SpawnHeader("oUF_noParty", nil, "party", "showParty", true)

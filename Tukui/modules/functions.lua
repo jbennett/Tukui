@@ -90,6 +90,9 @@ function TukuiDB.CreateShadow(f)
 end
 
 function TukuiDB.Kill(object)
+	if object.UnregisterAllEvents then
+		object:UnregisterAllEvents()
+	end
 	object.Show = TukuiDB.dummy
 	object:Hide()
 end
@@ -309,6 +312,12 @@ end
 do
 	if TukuiCF["unitframes"].enable ~= true then return end
 	
+	TukuiDB.updateAllElements = function(frame)
+		for _, v in ipairs(frame.__elements) do
+			v(frame, "UpdateElement", frame.unit)
+		end
+	end
+	
 	local SetUpAnimGroup = function(self)
 		self.anim = self:CreateAnimationGroup("Flash")
 		self.anim.fadein = self.anim:CreateAnimation("ALPHA", "FadeIn")
@@ -338,7 +347,8 @@ do
 
 	function TukuiDB.SpawnMenu(self)
 		local unit = self.unit:gsub("(.)", string.upper, 1)
-		if unit == "Targettarget" then return end
+		if unit == "Targettarget" or unit == "focustarget" or unit == "pettarget" then return end
+
 		if _G[unit.."FrameDropDown"] then
 			ToggleDropDownMenu(1, nil, _G[unit.."FrameDropDown"], "cursor")
 		elseif (self.unit:match("party")) then
@@ -399,7 +409,7 @@ do
 			
 			-- overwrite healthbar color for enemy player (a tukui option if enabled), target vehicle/pet too far away returning unitreaction nil and friend unit not a player. (mostly for overwrite tapped for friendly)
 			-- I don't know if we really need to call TukuiCF["unitframes"].unicolor but anyway, it's safe this way.
-			if (TukuiCF["unitframes"].unicolor ~= true and TukuiCF["unitframes"].enemyhcolor and unit == "target" and UnitIsEnemy(unit, "player")) or (TukuiCF["unitframes"].unicolor ~= true and unit == "target" and not UnitIsPlayer(unit) and UnitIsFriend(unit, "player")) then
+			if (TukuiCF["unitframes"].unicolor ~= true and TukuiCF["unitframes"].enemyhcolor and unit == "target" and UnitIsEnemy(unit, "player") and UnitIsPlayer(unit)) or (TukuiCF["unitframes"].unicolor ~= true and unit == "target" and not UnitIsPlayer(unit) and UnitIsFriend(unit, "player")) then
 				local c = TukuiDB.oUF_colors.reaction[UnitReaction(unit, "player")]
 				if c then 
 					r, g, b = c[1], c[2], c[3]

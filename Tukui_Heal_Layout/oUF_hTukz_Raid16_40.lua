@@ -6,7 +6,7 @@ local normTex = TukuiCF["media"].normTex
 
 local function Shared(self, unit)
 	self.colors = TukuiDB.oUF_colors
-	self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+	self:RegisterForClicks("AnyUp")
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
 	
@@ -95,6 +95,7 @@ local function Shared(self, unit)
 	local name = panel:CreateFontString(nil, "OVERLAY")
     name:SetPoint("TOP") name:SetPoint("BOTTOM") name:SetPoint("LEFT") name:SetPoint("RIGHT")
 	name:SetFont(font2, 12*TukuiCF["unitframes"].gridscale*TukuiDB.raidscale)
+	--name.frequentUpdates = 0.2
 	self:Tag(name, "[Tukui:getnamecolor][Tukui:nameshort]")
 	self.Name = name
 	
@@ -114,11 +115,11 @@ local function Shared(self, unit)
 		self.RaidIcon = RaidIcon
 	end
 	
-	--local ReadyCheck = power:CreateTexture(nil, "OVERLAY")
-	--ReadyCheck:SetHeight(TukuiDB.Scale(12*TukuiCF["unitframes"].gridscale*TukuiDB.raidscale))
-	--ReadyCheck:SetWidth(TukuiDB.Scale(12*TukuiCF["unitframes"].gridscale*TukuiDB.raidscale))
-	--ReadyCheck:SetPoint('CENTER') 	
-	--self.ReadyCheck = ReadyCheck
+	local ReadyCheck = power:CreateTexture(nil, "OVERLAY")
+	ReadyCheck:SetHeight(TukuiDB.Scale(12*TukuiCF["unitframes"].gridscale*TukuiDB.raidscale))
+	ReadyCheck:SetWidth(TukuiDB.Scale(12*TukuiCF["unitframes"].gridscale*TukuiDB.raidscale))
+	ReadyCheck:SetPoint('CENTER') 	
+	self.ReadyCheck = ReadyCheck
 	
 	--local picon = self.Health:CreateTexture(nil, 'OVERLAY')
 	--picon:SetPoint('CENTER', self.Health)
@@ -159,9 +160,16 @@ local function Shared(self, unit)
 		mhpb:SetStatusBarColor(0, 1, 0.5, 0.25)
 
 		local ohpb = CreateFrame('StatusBar', nil, self.Health)
-		ohpb:SetPoint('TOPLEFT', mhpb:GetStatusBarTexture(), 'TOPRIGHT', 0, 0)
-		ohpb:SetPoint('BOTTOMLEFT', mhpb:GetStatusBarTexture(), 'BOTTOMRIGHT', 0, 0)
-		ohpb:SetWidth(TukuiDB.Scale(66*TukuiCF["unitframes"].gridscale*TukuiDB.raidscale))
+		if TukuiCF["unitframes"].gridhealthvertical then
+			ohpb:SetOrientation("VERTICAL")
+			ohpb:SetPoint('BOTTOM', mhpb:GetStatusBarTexture(), 'TOP', 0, 0)
+			ohpb:SetWidth(TukuiDB.Scale(66*TukuiCF["unitframes"].gridscale*TukuiDB.raidscale))
+			ohpb:SetHeight(TukuiDB.Scale(50*TukuiCF["unitframes"].gridscale*TukuiDB.raidscale))
+		else
+			ohpb:SetPoint('TOPLEFT', mhpb:GetStatusBarTexture(), 'TOPRIGHT', 0, 0)
+			ohpb:SetPoint('BOTTOMLEFT', mhpb:GetStatusBarTexture(), 'BOTTOMRIGHT', 0, 0)
+			ohpb:SetWidth(TukuiDB.Scale(66*TukuiCF["unitframes"].gridscale*TukuiDB.raidscale))
+		end
 		ohpb:SetStatusBarTexture(normTex)
 		ohpb:SetStatusBarColor(0, 1, 0, 0.25)
 
@@ -208,7 +216,7 @@ local function Shared(self, unit)
 		
 		self.RaidDebuffs = RaidDebuffs
     end
-	
+
 	return self
 end
 

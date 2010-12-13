@@ -56,6 +56,19 @@ MiniMapInstanceDifficulty:ClearAllPoints()
 MiniMapInstanceDifficulty:SetParent(Minimap)
 MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
 
+-- GhostFrame under minimap
+GhostFrameContentsFrame:SetWidth(TukuiDB.Scale(148))
+GhostFrameContentsFrame:ClearAllPoints()
+GhostFrameContentsFrame:SetPoint("CENTER")
+GhostFrameContentsFrame.SetPoint = TukuiDB.dummy
+GhostFrame:SetFrameStrata("HIGH")
+GhostFrame:SetFrameLevel(10)
+GhostFrame:ClearAllPoints()
+GhostFrame:SetPoint("TOP", Minimap, "BOTTOM", 0, TukuiDB.Scale(-25))
+GhostFrameContentsFrameIcon:SetAlpha(0)
+GhostFrameContentsFrameText:ClearAllPoints()
+GhostFrameContentsFrameText:SetPoint("CENTER")
+
 local function UpdateLFG()
 	MiniMapLFGFrame:ClearAllPoints()
 	MiniMapLFGFrame:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", TukuiDB.Scale(2), TukuiDB.Scale(1))
@@ -91,7 +104,7 @@ local menuList = {
     {text = SPELLBOOK_ABILITIES_BUTTON,
     func = function() ToggleFrame(SpellBookFrame) end},
     {text = TALENTS_BUTTON,
-    func = function() if not PlayerTalentFrame then LoadAddOn("Blizzard_TalentUI") end PlayerTalentFrame_Toggle() end},
+    func = function() if not PlayerTalentFrame then LoadAddOn("Blizzard_TalentUI") end if not GlyphFrame then LoadAddOn("Blizzard_GlyphUI") end PlayerTalentFrame_Toggle() end},
     {text = ACHIEVEMENT_BUTTON,
     func = function() ToggleAchievementFrame() end},
     {text = QUESTLOG_BUTTON,
@@ -172,9 +185,8 @@ m_zone:Hide()
 
 local m_zone_text = m_zone:CreateFontString(nil,"Overlay")
 m_zone_text:SetFont(TukuiCF["media"].font,12)
-m_zone_text:SetPoint("Center",0,0)
-m_zone_text:SetJustifyH("CENTER")
-m_zone_text:SetJustifyV("MIDDLE")
+m_zone_text:SetPoint("TOP", 0, -TukuiDB.mult)
+m_zone_text:SetPoint("BOTTOM")
 m_zone_text:SetHeight(TukuiDB.Scale(12))
 m_zone_text:SetWidth(m_zone:GetWidth()-6)
 
@@ -196,8 +208,11 @@ Minimap:SetScript("OnEnter",function()
 	m_zone.anim_o:Stop()
 	m_coord.anim_o:Stop()
 	m_zone:Show()
-	m_coord:Show()
-	m_coord.anim:Play()
+	local x,y = GetPlayerMapPosition("player")
+	if x ~= 0 and y ~= 0 then
+		m_coord:Show()
+		m_coord.anim:Play()
+	end
 	m_zone.anim:Play()
 end)
  
