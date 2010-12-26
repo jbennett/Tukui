@@ -137,6 +137,7 @@ TukuiCF["tooltip"] = {
 TukuiCF["merchant"] = {
 	["sellgrays"] = true,                  -- automaticly sell grays?
 	["autorepair"] = true,                 -- automaticly repair?
+	["guildrepair"] = true,									-- repair from guild money first
 }
 
 TukuiCF["error"] = {

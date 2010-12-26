@@ -119,6 +119,7 @@ tukuilocal.popup_2raidactive = "2 raid layouts are active, please select a layou
 tukuilocal.merchant_repairnomoney = "You don't have enough money for repair!"
 tukuilocal.merchant_repaircost = "Your items have been repaired for"
 tukuilocal.merchant_trashsell = "Your vendor trash has been sold and you earned"
+tukuilocal.merchant_guildrepair = "Your items have been repaird from guild funds."
 
 tukuilocal.goldabbrev = "|cffffd700g|r"
 tukuilocal.silverabbrev = "|cffc7c7cfs|r"
