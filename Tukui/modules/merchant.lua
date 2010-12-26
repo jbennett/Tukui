@@ -23,11 +23,22 @@ f:SetScript("OnEvent", function()
 		end
 	end
 	if not IsShiftKeyDown() then
-		if CanMerchantRepair() and db.autorepair then
+		if CanMerchantRepair() and db.autorepair then	
 			local cost, possible = GetRepairAllCost()
+			
+			-- try to guild repair first
+			if cost>0 and db.guildrepair and 
+				IsInGuild() and CanWithdrawGuildBankMoney()then
+				RepairAllItems(1);
+				
+				-- get costs again
+				cost, possible = GetRepairAllCost()
+				DEFAULT_CHAT_FRAME:AddMessage(tukuilocal.merchant_guildrepair,255,255,0)
+			end
+			
 			if cost>0 then
 				if possible then
-					RepairAllItems()
+					--RepairAllItems()
 					local c = cost%100
 					local s = math.floor((cost%10000)/100)
 					local g = math.floor(cost/10000)
