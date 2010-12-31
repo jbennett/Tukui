@@ -1,4 +1,4 @@
-﻿TukuiCF["general"] = {
+TukuiCF["general"] = {
 	["autoscale"] = true,                  -- mainly enabled for users that don't want to mess with the config file
 	["uiscale"] = 0.71,                    -- set your value (between 0.64 and 1) of your uiscale if autoscale is off
 	["overridelowtohigh"] = true,         -- EXPERIMENTAL ONLY! override lower version to higher version on a lower reso.
@@ -42,7 +42,7 @@ TukuiCF["unitframes"] = {
 	["aggro"] = true,                      -- show aggro on all raids layouts
 	["raidunitdebuffwatch"] = true,        -- track important spell to watch in pve for grid mode.
 	["gridhealthvertical"] = true,         -- enable vertical grow on health bar for grid mode.
-	["showplayerinparty"] = false,         -- show my player frame in party
+	["showplayerinparty"] = true,         -- show my player frame in party
 	["gridscale"] = 1,                     -- set the healing grid scaling
 	
 	-- boss frames
@@ -79,7 +79,7 @@ TukuiCF["nameplate"] = {
 }
 
 TukuiCF["bags"] = {
-	["enable"] = false,                     -- enable an all in one bag mod that fit tukui perfectly
+	["enable"] = true,                     -- enable an all in one bag mod that fit tukui perfectly
 }
 
 TukuiCF["map"] = {
