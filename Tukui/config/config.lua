@@ -62,7 +62,10 @@ TukuiCF["unitframes"] = {
 
 TukuiCF["arena"] = {
 	["unitframes"] = true,                 -- enable tukz arena unitframes (requirement : tukui unitframes enabled)
-	["spelltracker"] = true,               -- enable tukz enemy spell tracker (an afflicted3 or interruptbar alternative)
+}
+
+TukuiCF["pvp"] = {
+	["interrupt"] = false,                 -- enable interrupt icons (interruptbar alternative)
 }
 
 TukuiCF["actionbar"] = {
@@ -138,6 +141,7 @@ TukuiCF["merchant"] = {
 	["sellgrays"] = true,                  -- automaticly sell grays?
 	["autorepair"] = true,                 -- automaticly repair?
 	["guildrepair"] = true,									-- repair from guild money first
+	["sellmisc"] = true,                   -- sell defined items automatically
 }
 
 TukuiCF["error"] = {
@@ -176,6 +180,7 @@ end
 
 if TukuiDB.myname == "Tukz" then
 	-- yeah my default config is not really like default tukui.
+	TukuiCF.pvp.interrupt = true
 	TukuiCF.actionbar.rightbars = 0
 	TukuiCF.actionbar.bottomrows = 1
 	TukuiCF.actionbar.hotkey = false

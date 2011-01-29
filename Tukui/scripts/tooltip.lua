@@ -11,7 +11,8 @@ local GameTooltip, GameTooltipStatusBar = _G["GameTooltip"], _G["GameTooltipStat
 
 local gsub, find, format = string.gsub, string.find, string.format
 
-local Tooltips = {GameTooltip,ItemRefTooltip,ShoppingTooltip1,ShoppingTooltip2,ShoppingTooltip3,WorldMapTooltip}
+local Tooltips = {GameTooltip,ShoppingTooltip1,ShoppingTooltip2,ShoppingTooltip3,WorldMapTooltip}
+local ItemRefTooltip = ItemRefTooltip
 
 local linkTypes = {item = true, enchant = true, spell = true, quest = true, unit = true, talent = true, achievement = true, glyph = true}
 
@@ -26,14 +27,18 @@ local NeedBackdropBorderRefresh = false
 
 hooksecurefunc("GameTooltip_SetDefaultAnchor", function(self, parent)
 	if db.cursor == true then
-		self:SetOwner(parent, "ANCHOR_CURSOR")
+		if IsAddOnLoaded("Tukui_Heal_Layout") and parent ~= UIParent then
+			self:SetOwner(parent, "ANCHOR_NONE")
+		else
+			self:SetOwner(parent, "ANCHOR_CURSOR")
+		end
 	else
 		self:SetOwner(parent, "ANCHOR_NONE")
 		if InCombatLockdown() and db.hidecombat == true then
 			self:Hide()
 		else
 			-- avoids flicker when mouseover unitframes with open bags
-			if TukuiCF["bags"].enable == true and StuffingFrameBags:IsShown() then
+			if TukuiCF["bags"].enable == true and StuffingFrameBags and StuffingFrameBags:IsShown() then
 				self:ClearAllPoints()
 				self:SetPoint("BOTTOMRIGHT", StuffingFrameBags, "TOPRIGHT", 0, TukuiDB.Scale(4))
 			else
@@ -45,6 +50,13 @@ hooksecurefunc("GameTooltip_SetDefaultAnchor", function(self, parent)
 end)
 
 GameTooltip:HookScript("OnUpdate",function(self, ...)
+	if self:GetAnchorType() == "ANCHOR_CURSOR" then
+		local x, y = GetCursorPosition()
+		local scale = self:GetEffectiveScale()
+		self:ClearAllPoints()
+		self:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", (x / scale + (15)), (y / scale + (7)))
+	end
+
 	if self:GetAnchorType() == "ANCHOR_CURSOR" and NeedBackdropBorderRefresh == true and db.cursor ~= true then
 		-- h4x for world object tooltip border showing last border color 
 		-- or showing background sometime ~blue :x
@@ -56,7 +68,7 @@ GameTooltip:HookScript("OnUpdate",function(self, ...)
 			self:Hide()
 		else
 			-- moves tooltip when opening bags
-			if TukuiCF["bags"].enable == true and StuffingFrameBags:IsShown() then
+			if TukuiCF["bags"].enable == true and StuffingFrameBags and StuffingFrameBags:IsShown() then
 				self:ClearAllPoints()
 				self:SetPoint("BOTTOMRIGHT", StuffingFrameBags, "TOPRIGHT", 0, TukuiDB.Scale(4))
 			else
@@ -303,6 +315,8 @@ TukuiTooltip:SetScript("OnEvent", function(self)
 	for _, tt in pairs(Tooltips) do
 		tt:HookScript("OnShow", SetStyle)
 	end
+	
+	ItemRefTooltip:HookScript("OnTooltipSetItem", SetStyle)
 	
 	TukuiDB.SetTemplate(FriendsTooltip)
 		
